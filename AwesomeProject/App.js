@@ -1,15 +1,11 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, StyleSheet, Text, View, Pressable } from "react-native";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useState, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
 import { StatusBar } from "expo-status-bar";
 import { Scene } from "./src/scene";
 import { Html } from "@react-three/drei";
 
 import * as STDLIB from "three-stdlib";
-
-const xChange = 0;
-const yChange = 0.526;
-const zChange = 0.245;
 
 const styles = StyleSheet.create({
   container: {
@@ -23,44 +19,62 @@ const styles = StyleSheet.create({
   },
 });
 
-export const MovingPlatform = () => {
+const CameraControls = () => {
+  const { camera } = useThree();
+  camera.rotation.y = Math.PI / 4;
+
+  return null;
+};
+
+export const MovingPlatform = (isMoving) => {
   var [xChangeMoving, setX] = useState(0);
-  var [yChangeMoving, setY] = useState(0.526);
-  var [zChangeMoving, setZ] = useState(0.245);
+  var [yChangeMoving, setY] = useState(0.6);
+  var [zChangeMoving, setZ] = useState(0);
 
   var [direction, setDirection] = useState("positive");
 
-  setTimeout(() => {
-    // {xChangeMoving < 1 ? setX(xChangeMoving + 0.05) : xChangeMoving > -1 ? setX(xChangeMoving - 0.05) : xChangeMoving}
-    // {zChangeMoving < 1 ? setZ(zChangeMoving + 0.4) : zChangeMoving > -1 ? setZ(zChangeMoving - 0.4) : zChangeMoving}
-    if (xChangeMoving < 2 && direction === "positive") {
-      setX(xChangeMoving + 0.05);
-      setZ(zChangeMoving + 0.025);
-    } else if (xChangeMoving >= 2 && direction === "positive") {
-      setDirection("negative");
-    }
-    if (xChangeMoving > -2 && direction === "negative") {
-      setX(xChangeMoving - 0.05);
-      setZ(zChangeMoving - 0.025);
-    } else if (xChangeMoving <= -2 && direction === "negative") {
-      setDirection("positive");
-    }
-  }, 20);
+  if (isMoving == true) {
+    setTimeout(() => {
+      if (xChangeMoving < 3 && direction === "positive") {
+        setX(xChangeMoving + 0.1);
+      } else if (xChangeMoving >= 3 && direction === "positive") {
+        setDirection("negative");
+      }
+      if (xChangeMoving > -3 && direction === "negative") {
+        setX(xChangeMoving - 0.1);
+      } else if (xChangeMoving <= -3 && direction === "negative") {
+        setDirection("positive");
+      }
+    }, 20);
+  } else {
+    PlacePlatform();
+  }
+
   return (
     <Scene
-      x={0 + xChangeMoving}
-      y={-1.68 + yChangeMoving}
+      x={-5 + xChangeMoving}
+      y={-2.5 + yChangeMoving}
       z={0 + zChangeMoving}
     />
   );
 };
 
+export const PlacePlatform = () => {
+  console.log("poggers");
+};
+
 export default function App() {
+  var [isMoving, setIsMoving] = useState(true);
+
   return (
-    <Canvas>
-      <Scene x={0} y={-1.68} z={0} />
-      {/* <Scene x={0 + xChange} y={-1.68 + yChange} z={0 + zChange} /> */}
-      <MovingPlatform />
+    <Canvas
+      onPress={() => {
+        setIsMoving(false);
+      }}
+    >
+      <CameraControls />
+      <Scene x={-5} y={-2.5} z={0} />
+      <MovingPlatform isMoving={true}/>
     </Canvas>
   );
 }
