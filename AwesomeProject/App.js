@@ -46,10 +46,20 @@ export const MovingPlatform = (isMoving) => {
         setDirection("positive");
       }
     }, 20);
+    return (
+      <Scene
+        x={-5 + xChangeMoving}
+        y={-2.5 + yChangeMoving}
+        z={0 + zChangeMoving}
+      />
+    );
   } else {
-    PlacePlatform();
+    PlacePlatform(xChangeMoving, yChangeMoving, zChangeMoving);
   }
+};
 
+export const PlacePlatform = (xChangeMoving, yChangeMoving, zChangeMoving) => {
+  console.log("poggers");
   return (
     <Scene
       x={-5 + xChangeMoving}
@@ -59,22 +69,23 @@ export const MovingPlatform = (isMoving) => {
   );
 };
 
-export const PlacePlatform = () => {
-  console.log("poggers");
-};
-
 export default function App() {
   var [isMoving, setIsMoving] = useState(true);
 
   return (
-    <Canvas
-      onPress={() => {
-        setIsMoving(false);
-      }}
-    >
+    <Canvas>
       <CameraControls />
       <Scene x={-5} y={-2.5} z={0} />
-      <MovingPlatform isMoving={true}/>
+      <MovingPlatform isMoving={isMoving} />
+      <mesh
+        onPointerDown={() => {
+          console.log("bruh");
+          setIsMoving(false);
+        }}
+      >
+        <planeGeometry args={[100, 100]} />
+        <meshBasicMaterial transparent opacity={0} />
+      </mesh>
     </Canvas>
   );
 }
