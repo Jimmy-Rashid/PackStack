@@ -27,15 +27,15 @@ const CameraControls = () => {
 };
 
 export const MovingPlatform = () => {
-  let [platformPlaced, setPlace] = useState(false);
+  const [platformPlaced, setPlace] = useState(false);
 
-  var [xChangeMoving, setX] = useState(0);
-  var [yChangeMoving, setY] = useState(0.6);
-  var [zChangeMoving, setZ] = useState(0);
+  const [xChangeMoving, setX] = useState(0);
+  const [yChangeMoving, setY] = useState(0.6);
+  const [zChangeMoving, setZ] = useState(0);
 
-  let placedX = xChangeMoving;
-  let placedY = yChangeMoving;
-  let placedZ = zChangeMoving;
+  const [placedX, setPlacedX] = useState(0);
+  const [placedY, setPlacedY] = useState(0);
+  const [placedZ, setPlacedZ] = useState(0);
 
   var [direction, setDirection] = useState("positive");
 
@@ -52,24 +52,40 @@ export const MovingPlatform = () => {
     }
   }, 20);
 
+  useEffect(() => {
+    setPlacedX(xChangeMoving);
+    setPlacedY(yChangeMoving);
+    setPlacedZ(zChangeMoving);
+  }, [platformPlaced]);
+
   return (
     <>
       <Scene
         x={-5 + xChangeMoving}
         y={-2.5 + yChangeMoving}
         z={0 + zChangeMoving}
+        length={2}
+        height={1}
+        width={2}
       />
-      
-      {useEffect(() => {
-        console.log("working as intended 😎");
-        <Scene x={-5 + placedX} y={-2.5 + placedY} z={0 + placedZ} />;
-      }, [platformPlaced])}
+
+      <>
+        {platformPlaced && (
+          <Scene
+            x={(placedX/2)-5}
+            y={-2.5 + placedY}
+            z={0 + placedZ}
+            length={(2-Math.abs(placedX))}
+            height={1}
+            width={2}
+          />
+        )}
+      </>
 
       <mesh
-        onPointerDown={() => {
-          console.log("bruh");
+        onPointerDown={async () => {
           console.log(placedX, placedY, placedZ);
-          setPlace(Math.random);
+          setPlace(Math.random());
         }}
       >
         <planeGeometry args={[100, 100]} />
@@ -88,7 +104,7 @@ export default function App() {
   return (
     <Canvas>
       <CameraControls />
-      <Scene x={-5} y={-2.5} z={0} />
+      <Scene x={-5} y={-2.5} z={0} length={2} height={1} width={2} />
       <MovingPlatform />
     </Canvas>
   );
