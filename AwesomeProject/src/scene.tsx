@@ -3,10 +3,10 @@ export const Scene = (props: any) => {
     <>
       <mesh
         scale={[1.2,0.6,1.2]}
-        position={[props.x, props.y, props.z]}
+        position={props.position}
         rotation={[0, 0, 0]}
       >
-        <boxGeometry args={[props.length, props.height, props.width]} />
+        <boxGeometry args={props.size} />
         <meshStandardMaterial color={"#b37100"} />
       </mesh>
       <directionalLight position={[3.66,2.98,2.22]} />

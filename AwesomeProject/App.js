@@ -22,6 +22,8 @@ const styles = StyleSheet.create({
 const CameraControls = () => {
   const { camera } = useThree();
   camera.rotation.y = Math.PI / 4;
+  camera.position.x = 5;
+  camera.position.y = 3;
 
   return null;
 };
@@ -61,23 +63,15 @@ export const MovingPlatform = () => {
   return (
     <>
       <Scene
-        x={-5 + xChangeMoving}
-        y={-2.5 + yChangeMoving}
-        z={0 + zChangeMoving}
-        length={2}
-        height={1}
-        width={2}
+        position={[xChangeMoving, yChangeMoving, zChangeMoving]}
+        size={[2, 1, 2]}
       />
 
       <>
         {platformPlaced && (
           <Scene
-            x={(placedX/2)-5}
-            y={-2.5 + placedY}
-            z={0 + placedZ}
-            length={(2-Math.abs(placedX))}
-            height={1}
-            width={2}
+            position={[placedX, placedY, placedZ]}
+            size={[(2-Math.abs(placedX-2)), 1, 2]}
           />
         )}
       </>
@@ -95,16 +89,11 @@ export const MovingPlatform = () => {
   );
 };
 
-export function PlacePlatform({ x, y, z }) {
-  console.log("poggers");
-  return <Scene x={-5 + x} y={-2.5 + y} z={0 + z} />;
-}
-
 export default function App() {
   return (
     <Canvas>
       <CameraControls />
-      <Scene x={-5} y={-2.5} z={0} length={2} height={1} width={2} />
+      <Scene position={[0, 0, 0]} size={[2, 1, 2]} />
       <MovingPlatform />
     </Canvas>
   );
