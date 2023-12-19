@@ -85,12 +85,14 @@ export const MovingPlatform = () => {
   }, 20);
 
   useEffect(() => {
-    setPlacedX(xChangeMoving);
-    setPlacedY(yChangeMoving);
-    setPlacedZ(zChangeMoving);
+    if (screenTapped === true) {
+      setObjects((prevObjects) => [...prevObjects, newObject]);
 
-    setObjects((prevObjects) => [...prevObjects, newObject]);
-  }, [platformPlaced]);
+      setY(yChangeMoving + 0.6);
+      setPlace(true);
+      setScreenTap(false);
+    }
+  });
 
   return (
     <>
