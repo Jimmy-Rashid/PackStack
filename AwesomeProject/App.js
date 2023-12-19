@@ -1,5 +1,5 @@
-import { Button, StyleSheet, Text, View, Pressable } from "react-native";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { StyleSheet } from "react-native";
+import { Canvas, useThree } from "@react-three/fiber";
 import { useState, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
 
@@ -35,7 +35,7 @@ const Lights = () => {
   );
 };
 
-export const Scene = ({ position, size }) => {
+const Scene = ({ position, size }) => {
   const mesh = useRef();
 
   return (
@@ -53,7 +53,7 @@ export const Scene = ({ position, size }) => {
   );
 };
 
-export const MovingPlatform = () => {
+const MovingPlatform = () => {
   const [counter, setCounter] = useState(0);
   const [objects, setObjects] = useState([]);
   const [screenTapped, setScreenTap] = useState(false);
@@ -68,7 +68,7 @@ export const MovingPlatform = () => {
   const newObject = {
     id: objects.length + 1,
     position: [xChangeMoving, yChangeMoving, zChangeMoving],
-    size: [2, 1, 2],
+    size: [2 - Math.abs(xChangeMoving / 2), 1, 2],
   };
 
   setTimeout(() => {
@@ -97,8 +97,8 @@ export const MovingPlatform = () => {
   return (
     <>
       <Scene
-        position={[xChangeMoving, yChangeMoving, zChangeMoving]}
-        size={[2, 1, 2]}
+        position={[xChangeMoving / 1.2, yChangeMoving, zChangeMoving]}
+        size={[2 - Math.abs(xChangeMoving*1.4), 1, 2]}
       />
 
       <>
