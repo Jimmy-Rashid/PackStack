@@ -1,7 +1,6 @@
 import { Button, StyleSheet, Text, View, Pressable } from "react-native";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useState, useRef, useEffect } from "react";
-import { StatusBar } from "expo-status-bar";
 import { Html } from "@react-three/drei";
 
 import * as STDLIB from "three-stdlib";
@@ -57,21 +56,18 @@ export const Scene = ({ position, size }) => {
 export const MovingPlatform = () => {
   const [counter, setCounter] = useState(0);
   const [objects, setObjects] = useState([]);
+  const [screenTapped, setScreenTap] = useState(false);
   const [platformPlaced, setPlace] = useState(false);
 
   const [xChangeMoving, setX] = useState(0);
   const [yChangeMoving, setY] = useState(0.6);
   const [zChangeMoving, setZ] = useState(0);
 
-  const [placedX, setPlacedX] = useState(0);
-  const [placedY, setPlacedY] = useState(0);
-  const [placedZ, setPlacedZ] = useState(0);
-
   var [direction, setDirection] = useState("positive");
 
   const newObject = {
     id: objects.length + 1,
-    position: [placedX, placedY, placedZ],
+    position: [xChangeMoving, yChangeMoving, zChangeMoving],
     size: [2, 1, 2],
   };
 
@@ -89,12 +85,15 @@ export const MovingPlatform = () => {
   }, 20);
 
   useEffect(() => {
-    setPlacedX(xChangeMoving);
-    setPlacedY(yChangeMoving);
-    setPlacedZ(zChangeMoving);
+    if (screenTapped === true) {
+      setObjects((prevObjects) => [...prevObjects, newObject]);
 
-    setObjects((prevObjects) => [...prevObjects, newObject]);
-  }, [platformPlaced]);
+      setX(0);
+      setY(yChangeMoving + 0.6);
+      setPlace(true);
+      setScreenTap(false);
+    }
+  });
 
   return (
     <>
@@ -104,17 +103,17 @@ export const MovingPlatform = () => {
       />
 
       <>
-        {platformPlaced &&
-          objects.map((obj) => (
-            <Scene key={obj.id} position={obj.position} size={obj.size} />
-          ))}
+        {platformPlaced
+          ? objects.map((obj) => (
+              <Scene key={obj.id} position={obj.position} size={obj.size} />
+            ))
+          : null}
       </>
 
       <mesh
         onPointerDown={() => {
-          setPlace(Math.random());
-          setY(yChangeMoving + 0.6);
           setCounter(counter + 1);
+          setScreenTap(true);
           console.log(counter);
         }}
       >
