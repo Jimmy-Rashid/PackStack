@@ -59,16 +59,19 @@ const MovingPlatform = () => {
   const [screenTapped, setScreenTap] = useState(false);
   const [platformPlaced, setPlace] = useState(false);
 
+  const [platformPosition, setPlatformPosition] = useState(0);
+  const [platformSize, setPlatformSize] = useState(2);
+
   const [xChangeMoving, setX] = useState(0);
   const [yChangeMoving, setY] = useState(0.6);
   const [zChangeMoving, setZ] = useState(0);
 
-  var [direction, setDirection] = useState("positive");
+  const [direction, setDirection] = useState("positive");
 
   const newObject = {
     id: objects.length + 1,
-    position: [xChangeMoving, yChangeMoving, zChangeMoving],
-    size: [2 - Math.abs(xChangeMoving / 2), 1, 2],
+    position: [xChangeMoving / 1.2, yChangeMoving, zChangeMoving],
+    size: [2 - Math.abs(xChangeMoving * 1.4), 1, 2],
   };
 
   setTimeout(() => {
@@ -82,6 +85,8 @@ const MovingPlatform = () => {
     } else if (xChangeMoving <= -3 && direction === "negative") {
       setDirection("positive");
     }
+
+    setPlatformPosition(xChangeMoving / 1.2);
   }, 20);
 
   useEffect(() => {
@@ -89,6 +94,7 @@ const MovingPlatform = () => {
       setObjects((prevObjects) => [...prevObjects, newObject]);
 
       setY(yChangeMoving + 0.6);
+      setPlatformSize(2 - Math.abs(xChangeMoving * 1.4));
       setPlace(true);
       setScreenTap(false);
     }
@@ -97,8 +103,8 @@ const MovingPlatform = () => {
   return (
     <>
       <Scene
-        position={[xChangeMoving / 1.2, yChangeMoving, zChangeMoving]}
-        size={[2 - Math.abs(xChangeMoving*1.4), 1, 2]}
+        position={[platformPosition, yChangeMoving, zChangeMoving]}
+        size={[platformSize, 1, 2]}
       />
 
       <>
