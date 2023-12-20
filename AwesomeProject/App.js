@@ -42,7 +42,7 @@ const Scene = ({ position, size }) => {
     <>
       <mesh
         ref={mesh}
-        scale={[1.2, 0.6, 1.2]}
+        scale={[1, 1, 1]}
         position={position}
         rotation={[0, 0, 0]}
       >
@@ -63,15 +63,15 @@ const MovingPlatform = () => {
   const [platformSize, setPlatformSize] = useState(2);
 
   const [xChangeMoving, setX] = useState(0);
-  const [yChangeMoving, setY] = useState(0.6);
+  const [yChangeMoving, setY] = useState(0.5);
   const [zChangeMoving, setZ] = useState(0);
 
   const [direction, setDirection] = useState("positive");
 
   const newObject = {
     id: objects.length + 1,
-    position: [xChangeMoving / 1.2, yChangeMoving, zChangeMoving],
-    size: [2 - Math.abs(xChangeMoving * 1.4), 1, 2],
+    position: [xChangeMoving/2, yChangeMoving, zChangeMoving],
+    size: [2 - Math.abs(xChangeMoving), 0.5, 2],
   };
 
   setTimeout(() => {
@@ -86,15 +86,16 @@ const MovingPlatform = () => {
       setDirection("positive");
     }
 
-    setPlatformPosition(xChangeMoving / 1.2);
+    setPlatformPosition(xChangeMoving);
   }, 20);
 
   useEffect(() => {
     if (screenTapped === true) {
       setObjects((prevObjects) => [...prevObjects, newObject]);
 
-      setY(yChangeMoving + 0.6);
-      setPlatformSize(2 - Math.abs(xChangeMoving * 1.4));
+      setY(yChangeMoving + 0.5);
+      setPlatformSize(2);
+      //2 - Math.abs(xChangeMoving)
       setPlace(true);
       setScreenTap(false);
     }
@@ -104,7 +105,7 @@ const MovingPlatform = () => {
     <>
       <Scene
         position={[platformPosition, yChangeMoving, zChangeMoving]}
-        size={[platformSize, 1, 2]}
+        size={[platformSize, 0.5, 2]}
       />
 
       <>
@@ -136,10 +137,10 @@ export default function App() {
     <Canvas>
       <CameraControls position={cameraPosition} />
       <Lights />
-      <Scene position={[0, 0, 0]} size={[2, 1, 2]} />
+      <Scene position={[0, 0, 0]} size={[2, 0.5, 2]} />
       <mesh
         onPointerDown={() => {
-          setCameraPosition((prevPosition) => prevPosition + 0.6);
+          setCameraPosition((prevPosition) => prevPosition + 0.5);
         }}
       >
         <planeGeometry args={[100, 100]} />
