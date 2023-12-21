@@ -70,7 +70,7 @@ const MovingPlatform = () => {
 
   const newObject = {
     id: objects.length + 1,
-    position: [xChangeMoving/2, yChangeMoving, zChangeMoving],
+    position: [xChangeMoving / 2, yChangeMoving, zChangeMoving],
     size: [2 - Math.abs(xChangeMoving), 0.5, 2],
   };
 
@@ -109,11 +109,29 @@ const MovingPlatform = () => {
       />
 
       <>
-        {platformPlaced
-          ? objects.map((obj) => (
-              <Scene key={obj.id} position={obj.position} size={obj.size} />
-            ))
-          : null}
+        {/* {platformPlaced
+          ? objects.map((obj) =>
+              setTimeout(() => {
+                obj.size > [0, 0, 0] ? (
+                  <Scene key={obj.id} position={obj.position} size={obj.size} />
+                ) : (
+                  <Scene
+                    key={obj.id}
+                    position={obj.position}
+                    size={[0, 0, 0]}
+                  />
+                );
+              }, 50)
+            )
+          : null} */}
+
+        {objects.map((obj) =>
+          obj.size > [0, 0, 0] ? (
+            <Scene key={obj.id} position={obj.position} size={obj.size} />
+          ) : (
+            <Scene key={obj.id} position={obj.position} size={[0, 0, 0]} />
+          )
+        )}
       </>
 
       <mesh
@@ -123,7 +141,7 @@ const MovingPlatform = () => {
           console.log(counter);
         }}
       >
-        <planeGeometry args={[100, 100]} />
+        <planeGeometry args={[100, 300]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
     </>
@@ -143,7 +161,7 @@ export default function App() {
           setCameraPosition((prevPosition) => prevPosition + 0.5);
         }}
       >
-        <planeGeometry args={[100, 100]} />
+        <planeGeometry args={[100, 300]} />
         <meshBasicMaterial transparent opacity={0} />
       </mesh>
       <MovingPlatform />
