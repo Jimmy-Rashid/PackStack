@@ -57,7 +57,7 @@ const MovingPlatform = () => {
   const [counter, setCounter] = useState(0);
   const [objects, setObjects] = useState([]);
   const [screenTapped, setScreenTap] = useState(false);
-  const [platformPlaced, setPlace] = useState(false);
+  const [platformPlaced, setPlace] = useState(0);
 
   const [platformPosition, setPlatformPosition] = useState(0);
   const [platformSize, setPlatformSize] = useState(2);
@@ -95,8 +95,8 @@ const MovingPlatform = () => {
 
       setY(yChangeMoving + 0.5);
       setPlatformSize(2);
-      //2 - Math.abs(xChangeMoving)
-      setPlace(true);
+
+      setPlace(Math.random());
       setScreenTap(false);
     }
   });
@@ -109,26 +109,11 @@ const MovingPlatform = () => {
       />
 
       <>
-        {/* {platformPlaced
-          ? objects.map((obj) =>
-              setTimeout(() => {
-                obj.size > [0, 0, 0] ? (
-                  <Scene key={obj.id} position={obj.position} size={obj.size} />
-                ) : (
-                  <Scene
-                    key={obj.id}
-                    position={obj.position}
-                    size={[0, 0, 0]}
-                  />
-                );
-              }, 50)
-            )
-          : null} */}
-
         {objects.map((obj) =>
-          obj.size > [0, 0, 0] ? (
+          obj.size[0] > 0 ? (
             <Scene key={obj.id} position={obj.position} size={obj.size} />
           ) : (
+            
             <Scene key={obj.id} position={obj.position} size={[0, 0, 0]} />
           )
         )}
