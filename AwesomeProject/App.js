@@ -54,13 +54,14 @@ const Scene = ({ position, size }) => {
 };
 
 const MovingPlatform = () => {
+  const [platformPlaced, setPlace] = useState(0);
+  const [screenTapped, setScreenTap] = useState(false);
   const [counter, setCounter] = useState(0);
   const [objects, setObjects] = useState([]);
-  const [screenTapped, setScreenTap] = useState(false);
-  const [platformPlaced, setPlace] = useState(0);
-
+  
   const [platformPosition, setPlatformPosition] = useState(0);
   const [platformSize, setPlatformSize] = useState(2);
+  const [platformSpeed, setPlatformSpeed] = useState(0.1);
 
   const [xChangeMoving, setX] = useState(0);
   const [yChangeMoving, setY] = useState(0.5);
@@ -76,18 +77,18 @@ const MovingPlatform = () => {
 
   setTimeout(() => {
     if (xChangeMoving < 3 && direction === "positive") {
-      setX(xChangeMoving + 0.1);
+      setX(xChangeMoving + platformSpeed);
     } else if (xChangeMoving >= 3 && direction === "positive") {
       setDirection("negative");
     }
     if (xChangeMoving > -3 && direction === "negative") {
-      setX(xChangeMoving - 0.1);
+      setX(xChangeMoving - platformSpeed);
     } else if (xChangeMoving <= -3 && direction === "negative") {
       setDirection("positive");
     }
 
     setPlatformPosition(xChangeMoving);
-  }, 20);
+  }, 5);
 
   useEffect(() => {
     if (screenTapped === true) {
@@ -95,6 +96,7 @@ const MovingPlatform = () => {
 
       setY(yChangeMoving + 0.5);
       setPlatformSize(2);
+      setPlatformSpeed(prevPlatformSpeed => prevPlatformSpeed + 0.01)
 
       setPlace(Math.random());
       setScreenTap(false);
