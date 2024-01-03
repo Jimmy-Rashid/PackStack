@@ -60,7 +60,6 @@ const MovingPlatform = () => {
 
   const [platformPosition, setPlatformPosition] = useState(0);
   const [platformSpeed, setPlatformSpeed] = useState(0.1);
-  const [platformSize, setPlatformSize] = useState(2);
 
   const [xChangeMoving, setX] = useState(0);
   const [yChangeMoving, setY] = useState(0.5);
@@ -76,13 +75,15 @@ const MovingPlatform = () => {
   const newObjectZ = {
     id: objects.length + 1,
     position: [xChangeMoving, yChangeMoving, zChangeMoving / 2],
-    size: [2, 0.5, 2 - Math.abs(zChangeMoving)],
+    // size: [2, 0.5, 2 - Math.abs(zChangeMoving)],
+    size: [2, 0.5, 2],
   };
 
   const newObjectX = {
     id: objects.length + 1,
     position: [xChangeMoving / 2, yChangeMoving, zChangeMoving],
-    size: [2 - Math.abs(xChangeMoving), 0.5, 2],
+    // size: [2 - Math.abs(xChangeMoving), 0.5, 2],
+    size: [2, 0.5, 2],
   };
 
   setTimeout(() => {
@@ -97,6 +98,16 @@ const MovingPlatform = () => {
       setDirection("positive");
     }
 
+    if (movementState == "x") {
+      setX(platformPosition);
+      setZ(0);
+    }
+
+    if (movementState == "z") {
+      setZ(platformPosition);
+      setX(0);
+    }
+
     setPlatformPosition(movementTracker);
   }, 5);
 
@@ -104,14 +115,12 @@ const MovingPlatform = () => {
     if (screenTapped === true) {
       if (movementState == "x") {
         setObjects((prevObjects) => [...prevObjects, newObjectX]);
-        setPlatformSize(2 - Math.abs(xChangeMoving), 0.5, 2);
         setX(platformPosition);
         setMovementState("z");
       }
 
       if (movementState == "z") {
         setObjects((prevObjects) => [...prevObjects, newObjectZ]);
-        setPlatformSize(2, 0.5, 2 - Math.abs(zChangeMoving));
         setZ(platformPosition);
         setMovementState("x");
       }
@@ -127,15 +136,23 @@ const MovingPlatform = () => {
 
   return (
     <>
-      <Scene position={positionArray} size={[2, 0.5, 2]} />
+      <Scene
+        position={[xChangeMoving, yChangeMoving, zChangeMoving]}
+        size={[2, 0.5, 2]}
+      />
 
       <>
         {objects.map((obj) =>
-          obj.size[(0, 1, 2)] > 0 ? (
+          obj.size[0] > 0 && obj.size[2] > 0 ? (
             <Scene key={obj.id} position={obj.position} size={obj.size} />
           ) : (
             <Scene key={obj.id} position={obj.position} size={[0, 0, 0]} />
           )
+          // obj.position[(0, 1, 2)] > -1.5 && obj.position[(0, 1, 2)] < 1.5 ? (
+          //   <Scene key={obj.id} position={obj.position} size={obj.size} />
+          // ) : (
+          //   <Scene key={obj.id} position={obj.position} size={[0, 0, 0]} />
+          // )
         )}
       </>
 
