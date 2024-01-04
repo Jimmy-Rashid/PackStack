@@ -58,7 +58,7 @@ const MovingPlatform = () => {
   const [counter, setCounter] = useState(0);
   const [objects, setObjects] = useState([]);
 
-  const [platformPosition, setPlatformPosition] = useState(0);
+  const [platformPosition, setPlatformPosition] = useState([]);
   const [platformSpeed, setPlatformSpeed] = useState(0.1);
 
   const [xChangeMoving, setX] = useState(0);
@@ -99,29 +99,25 @@ const MovingPlatform = () => {
     }
 
     if (movementState == "x") {
-      setX(platformPosition);
+      setX(movementTracker);
       setZ(0);
     }
 
     if (movementState == "z") {
-      setZ(platformPosition);
+      setZ(movementTracker);
       setX(0);
     }
-
-    setPlatformPosition(movementTracker);
   }, 5);
 
   useEffect(() => {
     if (screenTapped === true) {
       if (movementState == "x") {
         setObjects((prevObjects) => [...prevObjects, newObjectX]);
-        setX(platformPosition);
         setMovementState("z");
       }
 
       if (movementState == "z") {
         setObjects((prevObjects) => [...prevObjects, newObjectZ]);
-        setZ(platformPosition);
         setMovementState("x");
       }
 
@@ -148,11 +144,6 @@ const MovingPlatform = () => {
           ) : (
             <Scene key={obj.id} position={obj.position} size={[0, 0, 0]} />
           )
-          // obj.position[(0, 1, 2)] > -1.5 && obj.position[(0, 1, 2)] < 1.5 ? (
-          //   <Scene key={obj.id} position={obj.position} size={obj.size} />
-          // ) : (
-          //   <Scene key={obj.id} position={obj.position} size={[0, 0, 0]} />
-          // )
         )}
       </>
 
