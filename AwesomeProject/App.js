@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Canvas, useThree } from "@react-three/fiber";
-import { useState, useRef, useEffect } from "react";
+import { React, useState, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
 
 import * as STDLIB from "three-stdlib";
@@ -17,10 +17,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const CameraControls = ({ position }) => {
+const CameraControls = ({ position, zoom }) => {
   const { camera } = useThree();
   camera.rotation.y = Math.PI / 4;
-  camera.position.x = 5;
+  camera.position.x = zoom;
+  camera.position.z = zoom;
   camera.position.y = position;
 
   return null;
@@ -59,7 +60,7 @@ const MovingPlatform = () => {
   const [objects, setObjects] = useState([]);
 
   const [platformPosition, setPlatformPosition] = useState([]);
-  const [platformSpeed, setPlatformSpeed] = useState(0.1);
+  const [platformSpeed, setPlatformSpeed] = useState(0.05);
 
   const [xChangeMoving, setX] = useState(0);
   const [yChangeMoving, setY] = useState(0.5);
@@ -68,32 +69,39 @@ const MovingPlatform = () => {
   const [movementState, setMovementState] = useState("x");
   const [movementTracker, setMovementTracker] = useState(0);
 
+  const [sizeX, setSizeX] = useState(2);
+  const [sizeZ, setSizeZ] = useState(2);
+
   const [positionArray, setPositionArray] = useState([]);
 
   const [direction, setDirection] = useState("positive");
 
+  const [cameraZoom, setCameraZoom] = useState(5);
+  
   const newObjectZ = {
     id: objects.length + 1,
     position: [xChangeMoving, yChangeMoving, zChangeMoving / 2],
-    // size: [2, 0.5, 2 - Math.abs(zChangeMoving)],
-    size: [2, 0.5, 2],
+    size: [sizeX, 0.5, sizeZ],
   };
 
   const newObjectX = {
     id: objects.length + 1,
     position: [xChangeMoving / 2, yChangeMoving, zChangeMoving],
-    // size: [2 - Math.abs(xChangeMoving), 0.5, 2],
-    size: [2, 0.5, 2],
+    size: [sizeX, 0.5, sizeZ],
   };
 
   setTimeout(() => {
     if (movementTracker < 3 && direction === "positive") {
-      setMovementTracker(movementTracker + platformSpeed);
+      setMovementTracker(
+        (prevMovementTracker) => prevMovementTracker + platformSpeed
+      );
     } else if (movementTracker >= 3 && direction === "positive") {
       setDirection("negative");
     }
     if (movementTracker > -3 && direction === "negative") {
-      setMovementTracker(movementTracker - platformSpeed);
+      setMovementTracker(
+        (prevMovementTracker) => prevMovementTracker - platformSpeed
+      );
     } else if (movementTracker <= -3 && direction === "negative") {
       setDirection("positive");
     }
@@ -111,6 +119,10 @@ const MovingPlatform = () => {
 
   useEffect(() => {
     if (screenTapped === true) {
+      console.log(cameraZoom);
+      setSizeX((prevSizeX) => prevSizeX - Math.abs(xChangeMoving));
+      setSizeZ((prevSizeZ) => prevSizeZ - Math.abs(zChangeMoving));
+
       if (movementState == "x") {
         setObjects((prevObjects) => [...prevObjects, newObjectX]);
         setMovementState("z");
@@ -134,7 +146,7 @@ const MovingPlatform = () => {
     <>
       <Scene
         position={[xChangeMoving, yChangeMoving, zChangeMoving]}
-        size={[2, 0.5, 2]}
+        size={[sizeX, 0.5, sizeZ]}
       />
 
       <>
@@ -150,8 +162,8 @@ const MovingPlatform = () => {
       <mesh
         onPointerDown={() => {
           setCounter(counter + 1);
+          // console.log(counter);
           setScreenTap(true);
-          console.log(counter);
         }}
       >
         <planeGeometry args={[100, 300]} />
@@ -163,10 +175,11 @@ const MovingPlatform = () => {
 
 export default function App() {
   const [cameraPosition, setCameraPosition] = useState(3);
+  const [cameraZoom, setCameraZoom] = useState(5);
 
   return (
     <Canvas>
-      <CameraControls position={cameraPosition} />
+      <CameraControls position={cameraPosition} zoom={cameraZoom} />
       <Lights />
       <Scene position={[0, 0, 0]} size={[2, 0.5, 2]} />
       <mesh
