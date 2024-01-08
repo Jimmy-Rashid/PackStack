@@ -59,7 +59,6 @@ const MovingPlatform = () => {
   const [counter, setCounter] = useState(0);
   const [objects, setObjects] = useState([]);
 
-  const [platformPosition, setPlatformPosition] = useState([]);
   const [platformSpeed, setPlatformSpeed] = useState(0.05);
 
   const [xChangeMoving, setX] = useState(0);
@@ -72,12 +71,11 @@ const MovingPlatform = () => {
   const [sizeX, setSizeX] = useState(2);
   const [sizeZ, setSizeZ] = useState(2);
 
-  const [positionArray, setPositionArray] = useState([]);
-
   const [direction, setDirection] = useState("positive");
 
   const [cameraZoom, setCameraZoom] = useState(5);
-  
+  const [cameraPosition, setCameraPosition] = useState(3);
+
   const newObjectZ = {
     id: objects.length + 1,
     position: [xChangeMoving, yChangeMoving, zChangeMoving / 2],
@@ -119,7 +117,6 @@ const MovingPlatform = () => {
 
   useEffect(() => {
     if (screenTapped === true) {
-      console.log(cameraZoom);
       setSizeX((prevSizeX) => prevSizeX - Math.abs(xChangeMoving));
       setSizeZ((prevSizeZ) => prevSizeZ - Math.abs(zChangeMoving));
 
@@ -133,10 +130,12 @@ const MovingPlatform = () => {
         setMovementState("x");
       }
 
-      setPositionArray([xChangeMoving, yChangeMoving, zChangeMoving]);
-
       setY(yChangeMoving + 0.5);
       setPlatformSpeed((prevPlatformSpeed) => prevPlatformSpeed + 0.005);
+
+      sizeX > 0 && sizeZ > 0
+        ? setCameraPosition((prevPosition) => prevPosition + 0.5)
+        : null;
 
       setScreenTap(false);
     }
@@ -144,10 +143,18 @@ const MovingPlatform = () => {
 
   return (
     <>
-      <Scene
-        position={[xChangeMoving, yChangeMoving, zChangeMoving]}
-        size={[sizeX, 0.5, sizeZ]}
-      />
+      <CameraControls position={cameraPosition} zoom={cameraZoom} />
+      {sizeX > 0 && sizeZ > 0 ? (
+        <Scene
+          position={[xChangeMoving, yChangeMoving, zChangeMoving]}
+          size={[sizeX, 0.5, sizeZ]}
+        />
+      ) : (
+        <Scene
+          position={[xChangeMoving, yChangeMoving, zChangeMoving]}
+          size={[0, 0, 0]}
+        />
+      )}
 
       <>
         {objects.map((obj) =>
@@ -174,22 +181,10 @@ const MovingPlatform = () => {
 };
 
 export default function App() {
-  const [cameraPosition, setCameraPosition] = useState(3);
-  const [cameraZoom, setCameraZoom] = useState(5);
-
   return (
     <Canvas>
-      <CameraControls position={cameraPosition} zoom={cameraZoom} />
       <Lights />
       <Scene position={[0, 0, 0]} size={[2, 0.5, 2]} />
-      <mesh
-        onPointerDown={() => {
-          setCameraPosition((prevPosition) => prevPosition + 0.5);
-        }}
-      >
-        <planeGeometry args={[100, 300]} />
-        <meshBasicMaterial transparent opacity={0} />
-      </mesh>
       <MovingPlatform />
     </Canvas>
   );
