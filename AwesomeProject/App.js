@@ -3,7 +3,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { React, useState, useRef, useEffect } from "react";
 import { Html } from "@react-three/drei";
 
-import * as STDLIB from "three-stdlib";
+// import * as STDLIB from "three-stdlib";
 
 const styles = StyleSheet.create({
   container: {
@@ -59,11 +59,14 @@ const MovingPlatform = () => {
   const [counter, setCounter] = useState(0);
   const [objects, setObjects] = useState([]);
 
-  const [platformSpeed, setPlatformSpeed] = useState(0.05);
+  const [platformSpeed] = useState(0.075);
 
   const [xChangeMoving, setX] = useState(0);
   const [yChangeMoving, setY] = useState(0.5);
   const [zChangeMoving, setZ] = useState(0);
+
+  const [xPreviousDistance, setXPrevious] = useState(0);
+  const [zPreviousDistance, setZPrevious] = useState(0);
 
   const [movementState, setMovementState] = useState("x");
   const [movementTracker, setMovementTracker] = useState(0);
@@ -73,18 +76,14 @@ const MovingPlatform = () => {
 
   const [direction, setDirection] = useState("positive");
 
+  const [gameState, setGameState] = useState("running");
+
   const [cameraZoom, setCameraZoom] = useState(5);
   const [cameraPosition, setCameraPosition] = useState(3);
 
-  const newObjectZ = {
+  const newObject = {
     id: objects.length + 1,
-    position: [xChangeMoving, yChangeMoving, zChangeMoving / 2],
-    size: [sizeX, 0.5, sizeZ],
-  };
-
-  const newObjectX = {
-    id: objects.length + 1,
-    position: [xChangeMoving / 2, yChangeMoving, zChangeMoving],
+    position: [xChangeMoving, yChangeMoving, zChangeMoving],
     size: [sizeX, 0.5, sizeZ],
   };
 
@@ -106,54 +105,71 @@ const MovingPlatform = () => {
 
     if (movementState == "x") {
       setX(movementTracker);
-      setZ(0);
+      setZ(zPreviousDistance);
     }
 
     if (movementState == "z") {
       setZ(movementTracker);
-      setX(0);
+      setX(xPreviousDistance);
     }
   }, 5);
 
   useEffect(() => {
-    if (screenTapped === true) {
-      setSizeX((prevSizeX) => prevSizeX - Math.abs(xChangeMoving));
-      setSizeZ((prevSizeZ) => prevSizeZ - Math.abs(zChangeMoving));
+    if (screenTapped === true && gameState === "running") {
+      setSizeX((prevSizeX) => prevSizeX - Math.abs(xChangeMoving) / 2);
+      setSizeZ((prevSizeZ) => prevSizeZ - Math.abs(zChangeMoving) / 2);
+
+      setXPrevious(xChangeMoving);
+      setZPrevious(zChangeMoving);
 
       if (movementState == "x") {
-        setObjects((prevObjects) => [...prevObjects, newObjectX]);
         setMovementState("z");
       }
 
       if (movementState == "z") {
-        setObjects((prevObjects) => [...prevObjects, newObjectZ]);
         setMovementState("x");
       }
 
-      setY(yChangeMoving + 0.5);
-      setPlatformSpeed((prevPlatformSpeed) => prevPlatformSpeed + 0.005);
+      setObjects((prevObjects) => [...prevObjects, newObject]);
 
       sizeX > 0 && sizeZ > 0
-        ? setCameraPosition((prevPosition) => prevPosition + 0.5)
-        : null;
+        ? (setCameraPosition((prevPosition) => prevPosition + 0.5),
+          setY(yChangeMoving + 0.5))
+        : setGameState("over");
 
       setScreenTap(false);
     }
-  });
+  }, [screenTapped]);
+
+  useEffect(() => {
+    gameState == "over"
+      ? (setX(0),
+        setY(0.5),
+        setZ(0),
+        setSizeX(2),
+        setSizeZ(2),
+        setObjects([]),
+        setGameState("running"),
+        setCameraPosition(3),
+        setMovementTracker(0),
+        setXPrevious(0),
+        setZPrevious(0),
+        setMovementState("x"),
+        setDirection("positive"))
+      : null;
+  }, [gameState]);
 
   return (
     <>
       <CameraControls position={cameraPosition} zoom={cameraZoom} />
+
       {sizeX > 0 && sizeZ > 0 ? (
         <Scene
           position={[xChangeMoving, yChangeMoving, zChangeMoving]}
           size={[sizeX, 0.5, sizeZ]}
         />
       ) : (
-        <Scene
-          position={[xChangeMoving, yChangeMoving, zChangeMoving]}
-          size={[0, 0, 0]}
-        />
+        <Scene position={[0, 0, 0]} size={[0, 0, 0]} />
       )}
 
       <>
@@ -171,6 +187,8 @@ const MovingPlatform = () => {
           setCounter(counter + 1);
           // console.log(counter);
           setScreenTap(true);
+
+          // gameState == "over" ? () : ()
         }}
       >
         <planeGeometry args={[100, 300]} />
