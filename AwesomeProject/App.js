@@ -68,6 +68,9 @@ const MovingPlatform = () => {
   const [xPreviousDistance, setXPrevious] = useState(0);
   const [zPreviousDistance, setZPrevious] = useState(0);
 
+  const [changeInXDistance, setXChange] = useState(0);
+  const [changeInZDistance, setZChange] = useState(0);
+
   const [movementState, setMovementState] = useState("x");
   const [movementTracker, setMovementTracker] = useState(0);
 
@@ -116,11 +119,14 @@ const MovingPlatform = () => {
 
   useEffect(() => {
     if (screenTapped === true && gameState === "running") {
-      setSizeX((prevSizeX) => prevSizeX - Math.abs(xChangeMoving) / 2);
-      setSizeZ((prevSizeZ) => prevSizeZ - Math.abs(zChangeMoving) / 2);
+      setXChange(xChangeMoving - xPreviousDistance);
+      setZChange(zChangeMoving - zPreviousDistance);
 
       setXPrevious(xChangeMoving);
       setZPrevious(zChangeMoving);
+
+      setSizeX((prevSizeX) => prevSizeX - Math.abs(changeInXDistance));
+      setSizeZ((prevSizeZ) => prevSizeZ - Math.abs(changeInZDistance));
 
       if (movementState == "x") {
         setMovementState("z");
@@ -146,14 +152,16 @@ const MovingPlatform = () => {
       ? (setX(0),
         setY(0.5),
         setZ(0),
+        setXPrevious(0),
+        setZPrevious(0),
+        setXChange(0),
+        setZChange(0),
         setSizeX(2),
         setSizeZ(2),
         setObjects([]),
         setGameState("running"),
         setCameraPosition(3),
         setMovementTracker(0),
-        setXPrevious(0),
-        setZPrevious(0),
         setMovementState("x"),
         setDirection("positive"))
       : null;
